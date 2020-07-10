@@ -183,7 +183,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="analyze.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="MiniC.h" />
@@ -196,7 +195,6 @@
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="analyze.cpp" />
     <ClCompile Include="MiniC.cpp" />
     <ClCompile Include="MiniCDlg.cpp" />
     <ClCompile Include="parse.cpp" />

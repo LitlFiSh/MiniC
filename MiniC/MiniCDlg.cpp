@@ -12,9 +12,22 @@
 #define new DEBUG_NEW
 #endif
 #include <fstream>
+#include "pch.h"
 #include"globals.h"
 #include"parse.h"
+#include"scan.h"
+#include"util.h"
 
+int lineno = 0;
+FILE* source;
+FILE* listing;
+FILE* code;
+int EchoSource = FALSE;
+int TraceScan = FALSE;
+int TraceParse = TRUE;
+int TraceAnalyze = FALSE;
+int TraceCode = FALSE;
+int Error = FALSE;
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -108,9 +121,9 @@ BOOL CMiniCDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
-	ShowWindow(SW_MAXIMIZE);
+	//ShowWindow(SW_MAXIMIZE);
 
-	ShowWindow(SW_MINIMIZE);
+	//ShowWindow(SW_MINIMIZE);
 
 	// TODO: 在此添加额外的初始化代码
 

@@ -33,9 +33,6 @@
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="analyze.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="globals.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -57,9 +54,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="analyze.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="parse.cpp">
