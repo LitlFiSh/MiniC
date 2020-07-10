@@ -69,7 +69,7 @@ static TreeNode* program(void) {
     TreeNode* t = declaration_list();
     return t;
 }
-//-/
+//-01/
 
 static TreeNode* declaration_list(void) {
     TreeNode* t = declaration();
@@ -82,7 +82,7 @@ static TreeNode* declaration_list(void) {
     }
     return t;
 }
-//-/
+//-02/
 
 static TreeNode* declaration(void){
     TreeNode* t;
@@ -116,7 +116,7 @@ static TreeNode* declaration(void){
     }
     return t;
 }
-//-/
+//-03/
 
 static TreeNode* var_declaration(void) {
     TreeNode* t;
@@ -137,7 +137,7 @@ static TreeNode* var_declaration(void) {
     }
     return t;
 }
-//-/
+//-04/
 
 static TreeNode* type_specifier(void) {
     TreeNode* t = newStmtNode(ParamK);
@@ -158,7 +158,7 @@ static TreeNode* type_specifier(void) {
     }
     return t;
 }
-//-/
+//-05/
 
 static TreeNode* fun_declaration(void){
     TreeNode* t;
@@ -177,7 +177,7 @@ static TreeNode* fun_declaration(void){
     }
     return t;
 }
-//-/
+//-06/
 
 static TreeNode* params(void){
     TreeNode* t;
@@ -190,7 +190,7 @@ static TreeNode* params(void){
     }
     return t;
 }
-//-/
+//-07/
 
 static TreeNode* params_list(void){
     TreeNode* t = param();
@@ -204,7 +204,7 @@ static TreeNode* params_list(void){
     }
     return t;
 }
-//-/
+//-08/
 
 static TreeNode* param(void){
     TreeNode* t = type_specifier();
@@ -218,7 +218,7 @@ static TreeNode* param(void){
     }
     return t;
 }
-//-/
+//-09/
 
 static TreeNode* compound_stmt(void) {
     TreeNode* t;
@@ -231,7 +231,7 @@ static TreeNode* compound_stmt(void) {
     match(RBRACES);
     return t;
 }
-//-/
+//-10/
 
 static TreeNode* local_declarations(void) {
     TreeNode* t = nullptr;
@@ -246,7 +246,7 @@ static TreeNode* local_declarations(void) {
     }
     return t;
 }
-//-/
+//-11/
 
 static TreeNode* statement_list(void){
     TreeNode* t = nullptr;
@@ -265,12 +265,37 @@ static TreeNode* statement_list(void){
     }
     return t;
 }
-//-/
+//-12/
 
 static TreeNode* statement(void){
-    TreeNode* t;
+    TreeNode* t = nullptr;
     //SEMI,(,ID,NUM,{,IF,WHILE,RETURN
-    if (token == SEMI || token == LPAREN || token == ID || token == NUM)
+    switch (token) {
+    case SEMI:
+    case LPAREN:
+    case ID:
+    case NUM:
+        t = expression_stmt();
+        break;
+    case LBRACES:
+        t = compound_stmt();
+        break;
+    case IF:
+        t = selection_stmt();
+        break;
+    case WHILE:
+        t = iteration_stmt();
+        break;
+    case RETURN:
+        t = return_stmt();
+        break;
+    default:
+        syntaxError("unexpected token -> ");
+        printToken(token, tokenString);
+        token = getToken();
+        break;
+    }
+    /*if (token == SEMI || token == LPAREN || token == ID || token == NUM)
         t = expression_stmt();
     if (token == LBRACES)
         t = compound_stmt();
@@ -279,23 +304,23 @@ static TreeNode* statement(void){
     if (token == WHILE)
         t = iteration_stmt();
     if (token == RETURN)
-        t = return_stmt();
+        t = return_stmt();*/
     return t;
 }
-//-/
+//-13/
 
 static TreeNode* expression_stmt(void){
-    TreeNode* t = newStmtNode(ExpressionK);
+    TreeNode* t = nullptr;
     if (token == SEMI) {
         match(token);
     }
     else if (t != NULL) {
-        t->child[0] = expression();
+        t = expression();
         match(SEMI);
     }
     return t;
 }
-//-/
+//-14/
 
 static TreeNode* selection_stmt(void){
     TreeNode* t = newStmtNode(IfK);
@@ -312,7 +337,7 @@ static TreeNode* selection_stmt(void){
     }
     return t;
 }
-//-/
+//-15/
 
 static TreeNode* iteration_stmt(void){
     TreeNode* t = newStmtNode(WhileK);
@@ -325,7 +350,7 @@ static TreeNode* iteration_stmt(void){
     }
     return t;
 }
-//-/
+//-16/
 
 static TreeNode* return_stmt(void){
     TreeNode* t = newStmtNode(ReturnK);
@@ -338,23 +363,138 @@ static TreeNode* return_stmt(void){
     }
     return t;
 }
-//-/
+//-17/
 
-static TreeNode* expression(void){}
+static TreeNode* expression(void){
+    TreeNode* t = nullptr;
+    TreeNode* p = nullptr;
+    char* ch;
+    switch (token) {
+    case ID:
+        p = simple_expression();//var()
+        if (token == ASSIGN) {
+            t = newStmtNode(AssignK);
+            match(token);
+            t->child[0] = p;
+            t->child[1] = expression();
+        }
+        else
+            t = p;
+        break;
+    case LPAREN:
+    case NUM:
+        t = simple_expression();
+        break;
+    default:
+        syntaxError("unexpected token -> ");
+        printToken(token, tokenString);
+        token = getToken();
+        break;
+    }
+    /*if (token == ID) {
+        p = simple_expression();//var()
+        if (token == ASSIGN) {
+            t = newStmtNode(AssignK);
+            match(token);
+            t->child[0] = p;
+            t->child[1] = expression();
+        }
+        else
+            t = p;
+    }
+    else if (token == LPAREN || token == NUM)
+        t = simple_expression();*/
+    return t;
+}
+//-18/
 
-static TreeNode* var(void){}
+static TreeNode* var(void){
+    TreeNode* t = newExpNode(IdK);
+    t->attr.name = copyString(tokenString);
+    match(ID);
+    if (token == LBRACK) {
+        t->kind.exp = ArrayK;
+        match(token);
+        t->attr.arrayT = expression();
+        match(RBRACK);
+    }
+    return t;
+}
+//-19/
 
-static TreeNode* simple_expression(void){}
+static TreeNode* simple_expression(void){
+    TreeNode* t = additive_expression();
+    if (token == LE || token == LT || token == GT || token == GE
+        || token == EQ || token == NE) {
+        TreeNode* p = relop();
+        if (p != NULL) {
+            p->child[0] = t;
+            t = p;
+            p->child[1] = additive_expression();
+        }
+    }
+    return t;
+}
+//-20/
 
-static TreeNode* relop(void){}
+static TreeNode* relop(void){
+    TreeNode* t = newExpNode(OpK);
+    if (t != NULL) {
+        t->attr.op = token;
+        match(token);
+    }
+    return t;
+}
+//-21/
 
-static TreeNode* additive_expression(void){}
+static TreeNode* additive_expression(void){
+    TreeNode* t = term();
+    while (token == PLUS || token == MINUS) {
+        TreeNode* p = addop();
+        if (p != NULL) {
+            p->child[0] = t;
+            t = p;
+            p->child[1] = term();
+        }
+    }
+    return t;
+}
+//-22/
 
-static TreeNode* addop(void){}
+static TreeNode* addop(void){
+    TreeNode* t = newExpNode(OpK);
+    if (t != NULL) {
+        t->attr.op = token;
+        match(token);
+    }
+    return t;
+}
+//-23/
 
-static TreeNode* term(void){}
+static TreeNode* term(void){
+    TreeNode* t = factor();
+    TreeNode* p;
+    while (token == TIMES || token == OVER) {
+        p = mulop();
+        if (p != NULL) {
+            p->child[0] = t;
+            t = p;
+            p->child[1] = factor();
+        }
+    }
+    return t;
+}
+//-24/
 
-static TreeNode* mulop(void){}
+static TreeNode* mulop(void){
+    TreeNode* t = newExpNode(OpK);
+    if (t != NULL) {
+        t->attr.op = token;
+        match(token);
+    }
+    return t;
+}
+//-25/
 
 static TreeNode* factor(void){
     TreeNode* t = nullptr;
@@ -367,20 +507,30 @@ static TreeNode* factor(void){
         match(NUM);
         break;
     case ID:
-        ch = copyString(tokenString);
+        t = newExpNode(IdK);
+        t->attr.name = copyString(tokenString);
         match(ID);
-        if (token == LPAREN)
-            t = call();
-        else t = var();
-        t->attr.name = ch;
+        if (token == LBRACK) {
+            t->kind.exp = ArrayK;
+            match(token);
+            t->attr.arrayT = expression();
+            match(RBRACK);
+        }
+        else if (token == LPAREN) {
+            t->kind.exp = FunK;
+            match(token);
+            t->attr.funT = args();
+            match(RPAREN);
+        }
         break;
     case LPAREN:
         t = expression();
         match(RPAREN);
         break;
     }
+    return t;
 }
-//-/
+//-26/
 
 static TreeNode* call(void){
     TreeNode* t = newExpNode(FunK);
@@ -389,15 +539,15 @@ static TreeNode* call(void){
     match(RPAREN);
     return t;
 }
-//-/
+//-27/
 
 static TreeNode* args(void){
-    TreeNode* t;
+    TreeNode* t = nullptr;
     if (token == ID || token == NUM || token == LPAREN)
         t = arg_list();
     return t;
 }
-//-/
+//-28/
 
 static TreeNode* arg_list(void){
     TreeNode* t = expression();
@@ -411,7 +561,7 @@ static TreeNode* arg_list(void){
     }
     return t;
 }
-//-/
+//-29/
 //-------------------------------------------------------------------------------
 
 

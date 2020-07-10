@@ -31,4 +31,11 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	CTreeCtrl Gramma;
+	afx_msg void OnBnClickedOpen();
+	afx_msg void OnBnClickedSave();
+	afx_msg void OnBnClickedSaveas();
+	afx_msg void OnBnClickedLex();
+	afx_msg void OnBnClickedGramma();
 };

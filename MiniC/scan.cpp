@@ -64,7 +64,8 @@ static struct
 {
     char* str;
     TokenTypeT tok;
-} reservedWords[MAXRESERVED] = { {"if",IF},{"else",ELSE},{"while",WHILE},{"return",RETURN},{"int", Int},{"void", Void} };
+} reservedWords[MAXRESERVED] = { {"if",IF},{"else",ELSE},{"while",WHILE}
+                                ,{"return",RETURN},{"int", Int},{"void", Void} };
 
 /* lookup an identifier to see if it is a reserved word */
 /* uses linear search */
@@ -128,7 +129,7 @@ TokenTypeT getToken(void)
                         currentToken = EQ;
                     else {
                         ungetNextChar();
-                        state = INASSIGN;
+                        currentToken = ASSIGN;
                     }
                     break;
                 case '<':
@@ -158,14 +159,18 @@ TokenTypeT getToken(void)
                     break;
                 case '/':
                     if (getNextChar() == '*') {
-                        char nextc, prevc = 0;
+                        /*char nextc, prevc = 0;
                         while (nextc = getNextChar()) {
                             if (nextc == '/' && prevc == '*')
                                 break;
                             prevc = nextc;
-                        }
+                        }*/
+                        state = INCOMMENT;
                     }
-                    else currentToken = OVER;
+                    else {
+                        ungetNextChar();
+                        currentToken = OVER;
+                    }
                     break;
                 case '(':
                     currentToken = LPAREN;
@@ -195,19 +200,22 @@ TokenTypeT getToken(void)
                 }
             }
             break;
-        /*case INCOMMENT:
+        case INCOMMENT:
             save = FALSE;
             if (c == EOF)
             {
                 state = DONE;
                 currentToken = ENDFILE;
             }
-            else if (c == '}') state = START;
-            break;*/
-        case INASSIGN:
+            else if (c == '*') {
+                if (getNextChar() == '/')
+                    state = START;
+            }
+            break;
+        /*case INASSIGN:
             state = DONE;
             currentToken = ASSIGN;
-            break;
+            break;*/
         case INNUM:
             if (!isdigit(c))
             { /* backup in the input */

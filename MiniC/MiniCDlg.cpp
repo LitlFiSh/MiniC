@@ -11,6 +11,9 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+#include <fstream>
+#include"globals.h"
+#include"parse.h"
 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -59,12 +62,18 @@ CMiniCDlg::CMiniCDlg(CWnd* pParent /*=nullptr*/)
 void CMiniCDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_GRAMMA, Gramma);
 }
 
 BEGIN_MESSAGE_MAP(CMiniCDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_OPEN, &CMiniCDlg::OnBnClickedOpen)
+	ON_BN_CLICKED(IDC_SAVE, &CMiniCDlg::OnBnClickedSave)
+	ON_BN_CLICKED(IDC_SAVEAS, &CMiniCDlg::OnBnClickedSaveas)
+	ON_BN_CLICKED(BTN_LEX, &CMiniCDlg::OnBnClickedLex)
+	ON_BN_CLICKED(BTN_GRAMMA, &CMiniCDlg::OnBnClickedGramma)
 END_MESSAGE_MAP()
 
 
@@ -157,3 +166,68 @@ HCURSOR CMiniCDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMiniCDlg::OnBnClickedOpen()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	/*CString fpath, str;
+	TCHAR sizefilter[] = _T("C file(*.C)|*.C|txt file(*.txt)|*.txt|All file(*.*)|*.*||");
+	CFileDialog opendlg(TRUE, _T("C"), NULL, 0, sizefilter, this);
+	if (opendlg.DoModal() == IDOK) {
+		fpath = opendlg.GetPathName();
+		path = fpath;
+		CString tempstr = L"";
+		CStdioFile file;
+		file.Open(fpath, CFile::modeRead);
+		while (file.ReadString(tempstr)) {
+			tempstr += "\r\n";
+			edit += tempstr;
+		}
+		file.Close();
+		UpdateData(false);
+	}
+	else {
+		MessageBox(_T("open file error"));
+		return;
+	}*/
+}
+
+
+void CMiniCDlg::OnBnClickedSave()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	/*if (!path.IsEmpty()) {
+		ofstream file(path);
+		UpdateData(true);
+		program.GetWindowTextW(edit);
+		for (int i = 0; i < edit.GetLength(); i++)
+			if (edit[i] != '\r')
+				file.put(edit[i]);
+		file.close();
+	}
+	else {
+		SaveAs();
+		UpdateData(false);
+	}*/
+}
+
+
+void CMiniCDlg::OnBnClickedSaveas()
+{
+	// TODO: 在此添加控件通知处理程序代码
+}
+
+
+void CMiniCDlg::OnBnClickedLex()
+{
+	// TODO: 在此添加控件通知处理程序代码
+
+}
+
+
+void CMiniCDlg::OnBnClickedGramma()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	TreeNode* tree = parse();
+}
